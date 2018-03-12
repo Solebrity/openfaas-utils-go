@@ -30,7 +30,18 @@ func Invoke(function string, data []byte) ([]byte, error) {
 }
 
 func InvokeAsync(function string, data []byte, callback string) error {
-	_, err := http.Post("http://gateway:8080/async-function/"+function, "application/octet-stream", bytes.NewReader(data))
+	post, err := http.NewRequest("POST", "http://gateway:8080/async-function/"+function, bytes.NewReader(data))
+	if err != nil {
+		return err
+	}
+
+	post.Header.Add("content-type", "application/octet-stream")
+	if callback != "" {
+		post.Header.Add("X-Callback-URL", callback)
+	}
+
+	_, err = http.DefaultClient.Do(post)
+
 	if err != nil {
 		return err
 	}
