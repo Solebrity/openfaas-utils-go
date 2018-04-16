@@ -23,7 +23,9 @@ func GetSecretValue(secretName string) (string, error) {
 
 func Invoke(function string, data []byte) ([]byte, error) {
 	resp, err := http.Post("http://gateway:8080/function/"+function, "application/octet-stream", bytes.NewReader(data))
-
+	if err != nil {
+		return nil, err
+	}
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	return body, err
